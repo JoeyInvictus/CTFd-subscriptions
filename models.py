@@ -1,6 +1,7 @@
 from flask import Blueprint
 from CTFd.models import Challenges, Users, db
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class SubscriptionChallengeModel(Challenges):
     __mapper_args__ = {"polymorphic_identity": "subscription"}
@@ -14,15 +15,23 @@ class SubscriptionChallengeModel(Challenges):
 
 
 class SubscriptionUserModel(Users):
-    __mapper_args__ = {"polymorphic_identity": "usersubscription"}
+    __mapper_args__ = {
+    "polymorphic_identity": "subscriptionuser",
+    }
+    id = db.Column(db.Integer, primary_key=True)
     subscription_level = db.Column(db.String(32), default='freemium')
-    id = db.Column(
-        db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
+    user = db.relationship("Users", foreign_keys="SubscriptionUserModel.user_id", lazy="select")
 
     def __init__(self, *args, **kwargs):
+        # Set default subscription level if not provided
+        if 'subscription_level' not in kwargs:
+            kwargs['subscription_level'] = 'freemium'
         super(SubscriptionUserModel, self).__init__(**kwargs)
 
+    @hybrid_property
+    def level(self):
+        return self.subscription_level if self.subscription_level else 'freemium'
 
 
 class SubscriptionChallenge(BaseChallenge):

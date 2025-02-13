@@ -85,7 +85,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for user, subscription_level in users.items %}
+					{% for user in users.items %}
 					<tr name="{{ user.id }}" data-href="{{ url_for('admin.users_detail', user_id=user.id) }}">
 						<td class="border-right" data-checkbox>
 							<div class="form-check text-center">
@@ -149,7 +149,7 @@
 							{% endif %}
 						</td>
 						<td class="team-banned d-md-table-cell d-lg-table-cell text-center" value="{{ user.subscription_level }}">
-							{{ subscription_level }}
+							{{user.subscription_level }}
 						</td>
 					</tr>
 					{% endfor %}

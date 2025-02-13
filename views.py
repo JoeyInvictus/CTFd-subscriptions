@@ -2,8 +2,9 @@ from flask import render_template, request, url_for
 from .models import SubscriptionUserModel
 from CTFd.admin import admin
 from CTFd.utils.decorators import admins_only
-from CTFd.models import  Tracking, Users, db
+from CTFd.models import Tracking, Users, db
 
+from sqlalchemy import func
 
 @admin.route("/admin/users")
 @admins_only
@@ -27,10 +28,8 @@ def users_listing():
             .paginate(page=page, per_page=50, error_out=False)
         )
     else:
-        # Join SubscriptionUserModel (subclass of Users)
         users = (
-            db.session.query(Users, SubscriptionUserModel.subscription_level)
-            .outerjoin(SubscriptionUserModel, Users.id == SubscriptionUserModel.id)
+            Users.query.join(SubscriptionUserModel, Users.id == SubscriptionUserModel.user_id)
             .filter(*filters)
             .order_by(Users.id.asc())
             .paginate(page=page, per_page=50, error_out=False)
