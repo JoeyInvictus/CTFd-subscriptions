@@ -1,6 +1,6 @@
-{% with form = Forms.self.UserCreateForm() %}
+{% with form = Forms.self.UserEditForm(obj=user) %}
 {% from "admin/macros/forms.html" import render_extra_fields %}
-<form id="user-info-create-form" method="POST">
+<form id="user-info-edit-form">
 	<div class="form-group">
 		{{ form.name.label }}
 		{{ form.name(class="form-control", autocomplete="off") }}
@@ -8,6 +8,10 @@
 	<div class="form-group">
 		{{ form.email.label }}
 		{{ form.email(class="form-control", autocomplete="off") }}
+	</div>
+	<div class="form-group">
+		{{ form.language.label }}
+		{{ form.language(class="form-control custom-select", autocomplete="off") }}
 	</div>
 	<div class="form-group">
 		{{ form.password.label }}
@@ -19,20 +23,17 @@
 	</div>
 	<div class="form-group">
 		{{ form.website.label }}
-		<small class="float-right text-muted align-text-bottom">Optional</small>
 		{{ form.website(class="form-control", autocomplete="off") }}
 	</div>
 	<div class="form-group">
 		{{ form.affiliation.label }}
-		<small class="float-right text-muted align-text-bottom">Optional</small>
 		{{ form.affiliation(class="form-control", autocomplete="off") }}
 	</div>
 	<div class="form-group">
 		{{ form.country.label }}
-		<small class="float-right text-muted align-text-bottom">Optional</small>
 		{{ form.country(class="form-control custom-select", autocomplete="off") }}
 	</div>
-	
+
 	{{ render_extra_fields(form.extra) }}
 
 	<div class="form-group">
@@ -52,19 +53,8 @@
 			{{ form.banned.label(class="form-check-label") }}
 		</div>
 	</div>
-
-	{% if can_send_mail() %}
-	<div class="form-group">
-		<div class="form-check form-check-inline">
-			{{ form.notify(class="form-check-input", id="notify", autocomplete="off") }}
-			{{ form.notify.label(class="form-check-label") }}
-		</div>
-	</div>
-	{% endif %}
-
 	<div id="results">
 	</div>
-
-	{{ form.submit(id="update-user", class="btn btn-primary btn-outlined float-right modal-action") }}
+	{{ form.submit(class="btn btn-primary btn-outlined float-right modal-action") }}
 </form>
 {% endwith %}

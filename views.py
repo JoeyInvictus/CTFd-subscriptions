@@ -1,5 +1,4 @@
 from flask import render_template, request, url_for
-from .models import SubscriptionUserModel
 from CTFd.admin import admin
 from CTFd.utils.decorators import admins_only
 from CTFd.models import Tracking, Users, db
@@ -29,12 +28,10 @@ def users_listing():
         )
     else:
         users = (
-            Users.query.join(SubscriptionUserModel, Users.id == SubscriptionUserModel.user_id)
-            .filter(*filters)
+            Users.query.filter(*filters)
             .order_by(Users.id.asc())
             .paginate(page=page, per_page=50, error_out=False)
         )
-
     args = dict(request.args)
     args.pop("page", 1)
 
