@@ -27,6 +27,10 @@ def get_all_challenges(admin=False, field=None, q=None, sub=None, **query_args):
         chal_q = chal_q.filter(
             and_(Challenges.subscription_required == "freemium", Challenges.state != "locked")
         )
+    elif sub == "bleeding-edge":
+        chal_q = chal_q.filter(
+            and_(Challenges.state != "hidden", Challenges.state != "locked")
+        )
 
 
     chal_q = (
