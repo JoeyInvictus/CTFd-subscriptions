@@ -49,5 +49,3 @@ def load(app):
     '''Init the user create form'''
     Forms.self.UserCreateForm = UserCreateForm
     Forms.self.UserEditForm = UserEditForm
-
-    print(app.view_functions)
