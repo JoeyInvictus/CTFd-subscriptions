@@ -10,7 +10,7 @@ Challenge = namedtuple(
     "Challenge", ["id", "type", "name", "value", "category", "tags", "requirements"]
 )
 
-#@cache.memoize(timeout=60)
+@cache.memoize(timeout=60)
 def get_all_challenges(admin=False, field=None, q=None, sub=None, **query_args):
     filters = build_model_filters(model=Challenges, query=q, field=field)
     chal_q = Challenges.query

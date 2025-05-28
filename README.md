@@ -2,20 +2,19 @@
 
 Minimal changes to CTFd required.
 
-## Only change to challenges plugin required if using MySQL
-Adding the following line to `@classmethod`:
-```python
-"subscription_required": challenge.subscription_required,
-```
+## Changes to CTFd
+
+This plugin executes a migration that edits the challenge and user tables native to vanilla CTFd
+
 
 ## This plugin provides you with:
 - challenge mode subscription to set a level
 - user management for subscriptions
-- Sort of done: a management API
-- Done: actual RBAC per subscription tier
+- works via the API
+- actual RBAC per subscription tier
 
-### Overwriting API routes can be done like so:
-Cool stuff I found out:
+### Overwriting API routes
+We are overwriting specific API routes with our custom ones in order to make this plugin function.
 
 ```python
     CTFd_API_v1.endpoints.remove('challenges_challenge')
