@@ -57,7 +57,7 @@ def load(app):
 
     # removed the users endpoint
     CTFd_API_v1.endpoints.remove('users_user_public')
-    # de;etes the flask view function
+    # deletes the flask view function
     del app.view_functions['api.users_user_public']
     # re-registers our own
     CTFd_API_v1.add_namespace(users_namespace, "/users")
