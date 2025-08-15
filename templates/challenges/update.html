@@ -45,7 +45,7 @@
         <select class="form-control custom-select" name="subscription_required">
 			<option value="freemium" {% if challenge.subscription_required == "freemium" %}selected{% endif %}>Freemium</option>
 			<option value="premium" {% if challenge.subscription_required == "premium" %}selected{% endif %}>Premium</option>
-            <option value="bleeding-edge" {% if challenge.subscription_required == "bleeding-edge" %}selected{% endif %}>Bleeding Edge</option>
+            <option value="all-in" {% if challenge.subscription_required == "all-in" %}selected{% endif %}>All-in</option>
 		</select>
 	</div>
 	{% endblock %}

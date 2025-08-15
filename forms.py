@@ -182,7 +182,7 @@ class UserBaseForm(BaseForm):
     password = PasswordField("Password")
     website = StringField("Website")
     affiliation = StringField("Affiliation")
-    subscription_level = SelectField("Type", choices=[("freemium", "freemium"), ("premium", "premium"), ("bleeding-edge", "bleeding-edge")])
+    subscription_level = SelectField("Type", choices=[("freemium", "freemium"), ("premium", "premium"), ("all-in", "all-in")])
     country = SelectField("Country", choices=SELECT_COUNTRIES_LIST)
     type = SelectField("Type", choices=[("user", "User"), ("admin", "Admin")])
     verified = BooleanField("Verified")
