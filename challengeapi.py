@@ -145,8 +145,11 @@ class ChallengeList(Resource):
         if authed():
             user = get_current_user()
             user_solves = get_solve_ids_for_user_id(user_id=user.id)
+            user_subscription = user.subscription_level
         else:
+            user = None
             user_solves = set()
+            user_subscription = "freemium"
 
         # Aggregate the query results into the hashes defined at the top of
         # this block for later use
@@ -159,7 +162,7 @@ class ChallengeList(Resource):
             # `None` for the solve count if visiblity checks fail
             solve_count_dfl = None
 
-        chal_q = get_all_challenges(admin=admin_view, field=field, q=q, sub=user.subscription_level, **query_args)
+        chal_q = get_all_challenges(admin=admin_view, field=field, q=q, sub=user_subscription, **query_args)
 
         # Iterate through the list of challenges, adding to the object which
         # will be JSONified back to the client
@@ -275,16 +278,22 @@ class Challenge(Resource):
         user = get_current_user()
         if is_admin():
             chal = Challenges.query.filter(Challenges.id == challenge_id).first_or_404()
-        elif user.subscription_level == "premium":
+        else:
+            # Get the challenge first
             chal = Challenges.query.filter(
                 Challenges.id == challenge_id,
                 and_(Challenges.state != "hidden", Challenges.state != "locked"),
             ).first_or_404()
-        else:
-            chal = Challenges.query.filter(
-                Challenges.id == challenge_id,
-                and_(Challenges.state != "hidden", Challenges.state != "locked", Challenges.subscription_required == "freemium"),
-            ).first_or_404()
+            
+            # Check subscription requirements using the new method
+            required_subscription = chal.get_subscription_required()
+            user_subscription = user.subscription_level if user else "freemium"
+            
+            # Check if user has access based on subscription level
+            if required_subscription == "premium" and user_subscription == "freemium":
+                abort(404)  # Challenge not accessible to freemium users
+            elif required_subscription == "all-in" and user_subscription in ["freemium", "premium"]:
+                abort(404)  # Challenge not accessible to non-all-in users
 
         try:
             chal_class = get_chal_class(chal.type)

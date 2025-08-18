@@ -16,18 +16,37 @@ def get_all_challenges(admin=False, field=None, q=None, sub=None, **query_args):
     chal_q = Challenges.query
 
     if sub == "freemium":
+        # For freemium users, get challenges that are either:
+        # 1. Explicitly marked as freemium in subscription_required
+        # 2. Have a topic indicating freemium access
+        freemium_challenges = []
+        all_challenges = Challenges.query.filter(Challenges.state != "locked").all()
+        
+        for challenge in all_challenges:
+            if challenge.get_subscription_required() == "freemium":
+                freemium_challenges.append(challenge.id)
+        
         chal_q = chal_q.filter(
-            and_(Challenges.subscription_required == "freemium", Challenges.state != "locked")
+            and_(Challenges.id.in_(freemium_challenges), Challenges.state != "locked")
         )
     elif sub == "premium":
+        # For premium users, get challenges that are freemium OR premium
+        accessible_challenges = []
+        all_challenges = Challenges.query.filter(Challenges.state != "locked").all()
+        
+        for challenge in all_challenges:
+            subscription_req = challenge.get_subscription_required()
+            if subscription_req in ["freemium", "premium"]:
+                accessible_challenges.append(challenge.id)
+        
         chal_q = chal_q.filter(
-            and_((Challenges.subscription_required == "freemium") | (Challenges.subscription_required == "premium"), Challenges.state != "locked")
+            and_(Challenges.id.in_(accessible_challenges), Challenges.state != "locked")
         )
-    elif sub == "bleeding-edge":
+    elif sub == "all-in":
         chal_q = chal_q.filter(
             and_(Challenges.state != "hidden", Challenges.state != "locked")
         )
-
+    
     chal_q = (
         chal_q.filter_by(**query_args)
         .filter(*filters)

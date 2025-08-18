@@ -97,7 +97,7 @@
 							<td>{{ challenge.category }}</td>
 							<td class="text-center">{{ challenge.value }}</td>
 							<td class="text-center">{{ challenge.type }}</td>
-                            <td class="text-center">{{ challenge.subscription_required }}</td>
+                            <td class="text-center">{{ challenge.get_subscription_required() }}</td>
 							<td class="text-center">
 								{% set badge_state = 'badge-danger' if challenge.state == 'hidden' else 'badge-success' %}
 								<span class="badge {{ badge_state }}">{{ challenge.state }}</span>
