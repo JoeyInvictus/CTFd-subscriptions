@@ -294,6 +294,8 @@ class Challenge(Resource):
                 abort(404)  # Challenge not accessible to freemium users
             elif required_subscription == "all-in" and user_subscription in ["freemium", "premium"]:
                 abort(404)  # Challenge not accessible to non-all-in users
+            elif required_subscription == "beta" and user_subscription != "beta":
+                abort(404)
 
         try:
             chal_class = get_chal_class(chal.type)

@@ -1,5 +1,6 @@
 from collections import namedtuple
 from sqlalchemy.sql import and_
+from sqlalchemy.orm import joinedload
 from CTFd.cache import cache
 from CTFd.models import Challenges
 from CTFd.schemas.tags import TagSchema
@@ -43,8 +44,48 @@ def get_all_challenges(admin=False, field=None, q=None, sub=None, **query_args):
             and_(Challenges.id.in_(accessible_challenges), Challenges.state != "locked")
         )
     elif sub == "all-in":
+        accessible_challenges = []
+        all_challenges = (
+            Challenges.query
+            .options(joinedload(Challenges.topics))
+            .filter(and_(Challenges.state != "hidden", Challenges.state != "locked"))
+            .all()
+        )
+        
+        for challenge in all_challenges:
+            subscription_req = challenge.get_subscription_required()
+            if subscription_req in ["freemium", "premium", "all-in"]:
+                accessible_challenges.append(challenge.id)
+        
         chal_q = chal_q.filter(
-            and_(Challenges.state != "hidden", Challenges.state != "locked")
+            and_(
+                Challenges.id.in_(accessible_challenges),
+                Challenges.state != "hidden",
+                Challenges.state != "locked"
+            )
+        )
+    elif sub == "beta":
+        # Test users can see everything (for testing purposes)
+        accessible_challenges = []
+        all_challenges = (
+            Challenges.query
+            .options(joinedload(Challenges.topics))
+            .filter(and_(Challenges.state != "hidden", Challenges.state != "locked"))
+            .all()
+        )
+        
+        for challenge in all_challenges:
+            subscription_req = challenge.get_subscription_required()
+            # Test users see freemium, premium, all-in, AND beta challenges
+            if subscription_req in ["freemium", "premium", "all-in", "beta"]:
+                accessible_challenges.append(challenge.id)
+        
+        chal_q = chal_q.filter(
+            and_(
+                Challenges.id.in_(accessible_challenges),
+                Challenges.state != "hidden",
+                Challenges.state != "locked"
+            )
         )
     
     chal_q = (
