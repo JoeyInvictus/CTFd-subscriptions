@@ -77,7 +77,7 @@ def get_all_challenges(admin=False, field=None, q=None, sub=None, **query_args):
         for challenge in all_challenges:
             subscription_req = challenge.get_subscription_required()
             # Test users see freemium, premium, all-in, AND beta challenges
-            if subscription_req in ["freemium", "premium", "all-in", "beta"]:
+            if subscription_req == "beta":
                 accessible_challenges.append(challenge.id)
         
         chal_q = chal_q.filter(
